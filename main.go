@@ -6,18 +6,22 @@ import (
 )
 
 type cell struct {
-	id     int
+	cuad   int
 	value  int
 	solved bool
 	pVal   []int
 }
 
 type boardInt [9][9]int
-type board [9][9]cell
+
+type board struct {
+	boardd [9][9]cell
+	padre  int
+}
 
 func main() {
 
-	bi := boardInt{
+	/*bi := boardInt{
 		{0, 0, 0, 2, 6, 0, 7, 0, 1},
 		{6, 8, 0, 0, 7, 0, 0, 9, 0},
 		{1, 9, 0, 0, 0, 4, 5, 0, 0},
@@ -27,14 +31,42 @@ func main() {
 		{0, 0, 9, 3, 0, 0, 0, 7, 4},
 		{0, 4, 0, 0, 5, 0, 0, 3, 6},
 		{7, 0, 3, 0, 1, 8, 0, 0, 0},
+	}*/
+	bi := boardInt{
+		{5, 8, 1, 6, 7, 2, 4, 3, 9},
+		{7, 9, 0, 0, 0, 3, 6, 0, 0},
+		{0, 6, 0, 0, 9, 1, 0, 8, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 5, 0, 1, 8, 0, 0, 0, 3},
+		{0, 0, 0, 3, 0, 6, 0, 4, 5},
+		{0, 4, 0, 2, 0, 0, 0, 6, 0},
+		{9, 0, 3, 0, 0, 0, 0, 0, 0},
+		{0, 2, 0, 0, 0, 0, 1, 0, 0},
 	}
 
+	/*bi := boardInt{
+		{0, 2, 0, 6, 0, 8, 0, 0, 0},
+		{5, 8, 0, 0, 0, 9, 7, 0, 0},
+		{0, 0, 0, 0, 4, 0, 0, 0, 0},
+		{3, 7, 0, 0, 0, 0, 5, 0, 0},
+		{6, 0, 0, 0, 0, 0, 0, 0, 4},
+		{0, 0, 8, 0, 0, 0, 0, 1, 3},
+		{0, 0, 0, 0, 2, 0, 0, 0, 0},
+		{0, 0, 9, 8, 0, 0, 0, 3, 6},
+		{0, 0, 0, 3, 0, 6, 0, 9, 0},
+	}*/
+
 	board := bi.convertCellBoard()
-	board.solve()
+	fmt.Println("Board Inicial")
+	board.print(true)
+	bs := board.simpleSolve()
+	fmt.Println("Resultado final")
+	bs.solve().print(false)
+
 }
 
 func (bi boardInt) convertCellBoard() board {
-	var b board
+	var bb board
 	var cuad int
 	var s bool = false
 
@@ -79,104 +111,166 @@ func (bi boardInt) convertCellBoard() board {
 				s = false
 			}
 
-			b[c][r] = cell{id: cuad, value: bi[c][r], solved: s, pVal: []int{}}
+			bb.boardd[c][r] = cell{cuad: cuad, value: bi[c][r], solved: s, pVal: []int{}}
 		}
 	}
 
-	return b
+	return bb
 }
 
-func (b board) print(pval bool) {
+func (bb board) print(pval bool) {
+	b := bb.boardd
+	fmt.Println("------------------------------------------------")
 	for c := 0; c <= 8; c++ {
 		for r := 0; r <= 8; r++ {
 			fmt.Print(b[c][r].value)
 			if pval == true {
 				fmt.Print(b[c][r].pVal)
+				fmt.Print(b[c][r].solved)
 			}
-			fmt.Print(" ")
+			fmt.Print("  ")
 			if r == 8 {
 				fmt.Println("\n")
 			}
 		}
 	}
+	fmt.Println("------------------------------------------------ \n")
 }
 
-func (b board) findInRow(r int, val int) int {
-
-	for i := 0; i < 8; i++ {
-		if b[r][i].value == val {
-			return i
-
-		}
-	}
-	return -1
-}
-
-func (b board) findInColumn(c int, val int) int {
-
-	for i := 0; i < 8; i++ {
-		if b[i][c].value == val {
-			return i
-		}
-	}
-	return -1
-}
-
-func (b board) possibleValues() (board,int) {
-
+func (bb board) possibleValues() (board, int) {
+	b := bb.boardd
 	var changes int
 	for c := 0; c < 9; c++ {
 		for r := 0; r < 9; r++ {
 			mc := make(map[int]int)
 			mr := make(map[int]int)
+			mg := make(map[int]int)
 
+			//Si está resuelto se lo brinca (resuelto as in de entrada)
 			if b[c][r].solved == false {
-				b[c][r].pVal = []int{}
+
+				//Revisa números existentes en columnas
 				for i := 0; i < 9; i++ {
 					if b[c][i].value != 0 {
 						mr[b[c][i].value] = 1
 					}
 				}
+
+				//Revisa números existentes el rows
 				for i := 0; i < 9; i++ {
 					if b[i][r].value != 0 {
 						mc[b[i][r].value] = 1
 					}
 				}
 
-				for i := 1; i <= 9; i++ {
-					if _, ok := mc[i]; !(ok) {
-						if _, ok := mr[i]; !(ok) {
-							b[c][r].pVal = append(b[c][r].pVal, i)
+				//Revisa dentro de su cubo
+				for cx := 0; cx < 9; cx++ {
+					for rx := 0; rx < 9; rx++ {
+						if b[c][r].cuad == b[cx][rx].cuad && c != cx && c != rx {
+							mg[b[cx][rx].value] = 1
 						}
 					}
 				}
 
-				if len(b[c][r].pVal) == 1 {
-					b[c][r].solved = true
-					b[c][r].value = b[c][r].pVal[0]
-					b[c][r].pVal = []int{}
-					changes++
+				b[c][r].pVal = []int{}
+				for i := 1; i <= 9; i++ {
+					if _, ok := mc[i]; !(ok) {
+						if _, ok := mr[i]; !(ok) {
+							if _, ok := mg[i]; !(ok) {
+								if len(b[c][r].pVal) == 0 || b[c][r].pVal[0] < i {
+									//fmt.Println("Agrego: ", c,r,i, b[c][r].pVal)
+									b[c][r].pVal = append(b[c][r].pVal, i)
+								}
+							}
+						}
+					}
 				}
+			}
+
+			if len(b[c][r].pVal) == 1 {
+				b[c][r].solved = true
+				b[c][r].value = b[c][r].pVal[0]
+				b[c][r].pVal = []int{}
+				changes++
 			}
 		}
 	}
 
-	b.print(true)
-
-	return b,changes
+	//b.print(true)
+	bb.boardd = b
+	return bb, changes
 }
 
-
-func (b board)solve() board {
+func (b board) simpleSolve() board {
 	var b2 board
 	var i1 int
 
-	b2,i1=b.possibleValues()
-	for{
-		b2,i1=b2.possibleValues()
-		fmt.Println(i1)
-		if i1==0{break}
+	b2, i1 = b.possibleValues()
+	for {
+		b2, i1 = b2.possibleValues()
+		fmt.Println("Realice cambios en esta: ", i1)
+		if i1 == 0 {
+			break
+		}
+	}
+	b2.print(true)
+	return b2
+}
+
+func (pbb board) solve() (wb board) {
+	colb := []board{}
+	colb = append(colb, pbb)
+	var b3 board
+	i := 0
+
+	for {
+		cx, rx := unsolved(colb[i])
+		fmt.Println("cxrx", cx, rx)
+
+		if cx ==-1 && rx==-1{
+			wb.boardd=colb[i].boardd
+			return wb
+		}
+		for _, val := range (colb[i]).boardd[cx][rx].pVal {
+			if val != 0 {
+				b3 = colb[i]
+				b3.padre = i
+				b3.boardd[cx][rx].solved = true
+				b3.boardd[cx][rx].value = val
+				b3, _ = b3.possibleValues()
+				colb = append(colb, b3)
+			}
 		}
 
-	return b2
+		fmt.Println("Me faltan por resolver:", colb[i].validate())
+		fmt.Println("iteracion", i, len(colb))
+		i++
+	}
+}
+
+func (bb board) validate() int {
+	var fs int
+	b := bb.boardd
+	for c := 0; c < 9; c++ {
+		for r := 0; r < 9; r++ {
+			if b[c][r].solved == false {
+				fs++
+			}
+		}
+	}
+	fmt.Println("Faltan por resolver: ", fs)
+	return fs
+}
+
+func unsolved(bb board) (int, int) {
+	b := bb.boardd
+	for c := 0; c < 9; c++ {
+		for r := 0; r < 9; r++ {
+			if b[c][r].solved == false {
+				return c, r
+			}
+		}
+	}
+
+	return -1, -1
 }
