@@ -15,14 +15,13 @@ type cell struct {
 
 type boardInt [9][9]int
 
-type board struct {
-	boardd [9][9]cell
-	padre  int
-}
+type board [9][9]cell
+
 
 func main() {
-
-	/*bi := boardInt{
+	/*
+	//Simpler board, solved without Solve()
+	bi := boardInt{
 		{0, 0, 0, 2, 6, 0, 7, 0, 1},
 		{6, 8, 0, 0, 7, 0, 0, 9, 0},
 		{1, 9, 0, 0, 0, 4, 5, 0, 0},
@@ -32,7 +31,8 @@ func main() {
 		{0, 0, 9, 3, 0, 0, 0, 7, 4},
 		{0, 4, 0, 0, 5, 0, 0, 3, 6},
 		{7, 0, 3, 0, 1, 8, 0, 0, 0},
-	}
+	}*/
+
 	bi := boardInt{
 		{0, 0, 0, 6, 0, 0, 4, 0, 0},
 		{7, 0, 0, 0, 0, 3, 6, 0, 0},
@@ -45,49 +45,52 @@ func main() {
 		{0, 2, 0, 0, 0, 0, 1, 0, 0},
 	}
 
-	bi := boardInt{
-		{0, 2, 0, 6, 0, 8, 0, 0, 0},
-		{5, 8, 0, 0, 0, 9, 7, 0, 0},
-		{0, 0, 0, 0, 4, 0, 0, 0, 0},
-		{3, 7, 0, 0, 0, 0, 5, 0, 0},
-		{6, 0, 0, 0, 0, 0, 0, 0, 4},
-		{0, 0, 8, 0, 0, 0, 0, 1, 3},
-		{0, 0, 0, 0, 2, 0, 0, 0, 0},
-		{0, 0, 9, 8, 0, 0, 0, 3, 6},
-		{0, 0, 0, 3, 0, 6, 0, 9, 0},
-	}
+	/*
 
-	bi := boardInt{
-		{0, 0, 0, 4, 8, 0, 2, 0, 0},
-		{9, 0, 0, 7, 2, 0, 0, 1, 8},
-		{8, 0, 0, 0, 0, 6, 0, 0, 0},
-		{6, 0, 0, 0, 0, 2, 0, 8, 0},
-		{4, 0, 0, 0, 0, 0, 0, 0, 7},
-		{0, 9, 0, 1, 0, 0, 0, 0, 2},
-		{0, 0, 0, 8, 0, 0, 0, 0, 5},
-		{7, 8, 0, 0, 4, 3, 0, 0, 6},
-		{0, 0, 6, 0, 5, 7, 0, 0, 0},
-	}*/
+		bi := boardInt{
+			{0, 2, 0, 6, 0, 8, 0, 0, 0},
+			{5, 8, 0, 0, 0, 9, 7, 0, 0},
+			{0, 0, 0, 0, 4, 0, 0, 0, 0},
+			{3, 7, 0, 0, 0, 0, 5, 0, 0},
+			{6, 0, 0, 0, 0, 0, 0, 0, 4},
+			{0, 0, 8, 0, 0, 0, 0, 1, 3},
+			{0, 0, 0, 0, 2, 0, 0, 0, 0},
+			{0, 0, 9, 8, 0, 0, 0, 3, 6},
+			{0, 0, 0, 3, 0, 6, 0, 9, 0},
+		}
 
-	bi := boardInt{
-		{0, 0, 0, 8, 1, 9, 5, 0, 3},
-		{0, 0, 6, 0, 0, 0, 0, 0, 8},
-		{0, 0, 0, 3, 0, 6, 2, 0, 0},
-		{0, 0, 3, 0, 0, 0, 0, 2, 6},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{1, 4, 0, 0, 0, 0, 8, 0, 0},
-		{0, 0, 2, 4, 0, 8, 0, 0, 0},
-		{9, 0, 0, 0, 0, 0, 4, 0, 0},
-		{3, 0, 4, 7, 2, 1, 0, 0, 0},
-	}
+		bi := boardInt{
+			{0, 0, 0, 4, 8, 0, 2, 0, 0},
+			{9, 0, 0, 7, 2, 0, 0, 1, 8},
+			{8, 0, 0, 0, 0, 6, 0, 0, 0},
+			{6, 0, 0, 0, 0, 2, 0, 8, 0},
+			{4, 0, 0, 0, 0, 0, 0, 0, 7},
+			{0, 9, 0, 1, 0, 0, 0, 0, 2},
+			{0, 0, 0, 8, 0, 0, 0, 0, 5},
+			{7, 8, 0, 0, 4, 3, 0, 0, 6},
+			{0, 0, 6, 0, 5, 7, 0, 0, 0},
+		}
 
-	defer elapsed("SudokuSolver")()
+
+		bi := boardInt{
+			{0, 0, 0, 8, 1, 9, 5, 0, 3},
+			{0, 0, 6, 0, 0, 0, 0, 0, 8},
+			{0, 0, 0, 3, 0, 6, 2, 0, 0},
+			{0, 0, 3, 0, 0, 0, 0, 2, 6},
+			{0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{1, 4, 0, 0, 0, 0, 8, 0, 0},
+			{0, 0, 2, 4, 0, 8, 0, 0, 0},
+			{9, 0, 0, 0, 0, 0, 4, 0, 0},
+			{3, 0, 4, 7, 2, 1, 0, 0, 0},
+		}*/
+
+	defer elapsed("Sudoku Solver")()
 
 	board := bi.convertCellBoard()
 	fmt.Println("Board Inicial")
-	board.print(true)
+	board.print(false)
 	bs := board.simpleSolve()
-	fmt.Println("---------- Resultado final ----------")
+	fmt.Println("\n\n ---------- Resultado final ----------")
 	bs.solve().print(false)
 
 }
@@ -100,7 +103,7 @@ func elapsed(what string) func() {
 }
 
 func (bi boardInt) convertCellBoard() board {
-	var bb board
+	var b board
 	var cuad int
 	var s bool = false
 
@@ -145,15 +148,14 @@ func (bi boardInt) convertCellBoard() board {
 				s = false
 			}
 
-			bb.boardd[c][r] = cell{cuad: cuad, value: bi[c][r], solved: s, pVal: []int{}}
+			b[c][r] = cell{cuad: cuad, value: bi[c][r], solved: s, pVal: []int{}}
 		}
 	}
 
-	return bb
+	return b
 }
 
-func (bb board) print(pval bool) {
-	b := bb.boardd
+func (b board) print(pval bool) {
 	fmt.Println("------------------------------------------------")
 	for c := 0; c <= 8; c++ {
 		for r := 0; r <= 8; r++ {
@@ -171,8 +173,7 @@ func (bb board) print(pval bool) {
 	fmt.Println("------------------------------------------------ \n")
 }
 
-func (bb board) possibleValues() (board, int) {
-	b := bb.boardd
+func (b board) possibleValues() (board, int) {
 	var changes int
 	for c := 0; c < 9; c++ {
 		for r := 0; r < 9; r++ {
@@ -230,9 +231,7 @@ func (bb board) possibleValues() (board, int) {
 		}
 	}
 
-	//b.print(true)
-	bb.boardd = b
-	return bb, changes
+	return b, changes
 }
 
 func (b board) simpleSolve() board {
@@ -240,80 +239,71 @@ func (b board) simpleSolve() board {
 	var i1 int
 
 	b2, i1 = b.possibleValues()
+	
 	for {
 		b2, i1 = b2.possibleValues()
-		fmt.Println("Realice cambios en esta: ", i1)
 		if i1 == 0 {
 			break
 		}
 	}
-	fmt.Println("Simple Solve----")
-	b2.print(true)
+
 	return b2
 }
 
-func (pbb board) solve() (wb board) {
-	colb := []board{}
-	colb = append(colb, pbb)
+func (pb board) solve() (wb board) {
+	col := []board{}
+	col = append(col, pb)
 	var b3 board
 	i := 0
 
 	for {
-		cx, rx := unsolved(colb[i])
-		//fmt.Println("cxrx", cx, rx)
-
+		cx, rx := unsolved(col[i])
 		if cx ==-1 && rx==-1{
 			fmt.Println("Posible final")
-			colb[i].print(false)
-			colb[i].validate()
+			col[i].print(false)
+			col[i].validate()
 			fmt.Println("Iteracion", i)
-			fmt.Println("Pasos encontrados",len(colb))
-			wb.boardd=colb[i].boardd
+			fmt.Println("Pasos encontrados",len(col))
+			wb=col[i]
 			return wb
 		}
 
-		for _, val := range (colb[i]).boardd[cx][rx].pVal {
+		for _, val := range (col[i])[cx][rx].pVal {
 			if val != 0 {
-				b3 = colb[i]
-				b3.padre = i
-				b3.boardd[cx][rx].solved = true
-				b3.boardd[cx][rx].value = val
+				b3 = col[i]
+				b3[cx][rx].solved = true
+				b3[cx][rx].value = val
 				b3, _ = b3.possibleValues()
-				colb = append(colb, b3)
+				col = append(col, b3)
 			}
 		}
-		//fmt.Println("--")
-		//fmt.Println("Me faltan por resolver:", colb[i].validate())
-		//fmt.Println("Iteracion", i)
 		i++
 	}
 }
 
-func (bb board) validate() int {
+func (b board) validate() int {
 	var fs int
-	b := bb.boardd
 
 	for c := 0; c < 9; c++ {
 		sum := 0
+
 		for r := 0; r < 9; r++ {
 			sum += b[c][r].value
-
 			if b[c][r].solved == false {
 				fs++
-
 			}
 		}
-
 		if sum!=45 {
 			fmt.Println("\n \n Resultado o Sudoku inválido")
 			os.Exit(3)
 		}
 	}
+
 	return fs
 }
 
-func unsolved(bb board) (int, int) {
-	b := bb.boardd
+func unsolved(b board) (int, int) {
+
 	for c := 0; c < 9; c++ {
 		for r := 0; r < 9; r++ {
 			if b[c][r].solved == false {
@@ -321,5 +311,6 @@ func unsolved(bb board) (int, int) {
 			}
 		}
 	}
+
 	return -1, -1
 }
