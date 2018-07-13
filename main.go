@@ -239,7 +239,7 @@ func (b board) simpleSolve() board {
 	var i1 int
 
 	b2, i1 = b.possibleValues()
-	
+
 	for {
 		b2, i1 = b2.possibleValues()
 		if i1 == 0 {
