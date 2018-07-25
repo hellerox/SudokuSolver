@@ -20,14 +20,4 @@ install:
 
 script:
 - FILE="1" ./scripts/test.sh
-- go build -ldflags "-X main.configPath=/opt/bamboo/config/ -X main.version=${VERSION}" -o build/opt/binancecli
-
-
-after_failure:
-- reports-publisher
-
-after_success:
-- reports-publisher
-
-
-
+- go build -ldflags "-X main.configPath=/opt/bamboo/config/ -X main.version=${VERSION}" -o build/opt/sudoku
