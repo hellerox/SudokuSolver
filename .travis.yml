@@ -1,0 +1,23 @@
+language: go
+
+go:
+- 1.10.1
+
+env:
+  global:
+  - PACKAGES_TYPES="rpm"
+  - VERSION=$(./scripts/version.sh)
+
+branches:
+  only:
+  - master
+
+before_install:
+- go get -u github.com/golang/dep/cmd/dep
+
+install:
+- dep ensure
+
+script:
+- FILE="1" ./scripts/test.sh
+- go build -ldflags "-X main.configPath=/opt/bamboo/config/ -X main.version=${VERSION}" -o build/opt/sudoku
