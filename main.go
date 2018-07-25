@@ -17,21 +17,20 @@ type boardInt [9][9]int
 
 type board [9][9]cell
 
-
 func main() {
 	/*
-	//Simpler board, solved without Solve()
-	bi := boardInt{
-		{0, 0, 0, 2, 6, 0, 7, 0, 1},
-		{6, 8, 0, 0, 7, 0, 0, 9, 0},
-		{1, 9, 0, 0, 0, 4, 5, 0, 0},
-		{8, 2, 0, 1, 0, 0, 0, 4, 0},
-		{0, 0, 4, 6, 0, 2, 9, 0, 0},
-		{0, 5, 0, 0, 0, 3, 0, 2, 8},
-		{0, 0, 9, 3, 0, 0, 0, 7, 4},
-		{0, 4, 0, 0, 5, 0, 0, 3, 6},
-		{7, 0, 3, 0, 1, 8, 0, 0, 0},
-	}*/
+		//Simpler board, solved without Solve()
+		bi := boardInt{
+			{0, 0, 0, 2, 6, 0, 7, 0, 1},
+			{6, 8, 0, 0, 7, 0, 0, 9, 0},
+			{1, 9, 0, 0, 0, 4, 5, 0, 0},
+			{8, 2, 0, 1, 0, 0, 0, 4, 0},
+			{0, 0, 4, 6, 0, 2, 9, 0, 0},
+			{0, 5, 0, 0, 0, 3, 0, 2, 8},
+			{0, 0, 9, 3, 0, 0, 0, 7, 4},
+			{0, 4, 0, 0, 5, 0, 0, 3, 6},
+			{7, 0, 3, 0, 1, 8, 0, 0, 0},
+		}*/
 
 	bi := boardInt{
 		{0, 0, 0, 6, 0, 0, 4, 0, 0},
@@ -84,28 +83,28 @@ func main() {
 			{3, 0, 4, 7, 2, 1, 0, 0, 0},
 		}*/
 
-	defer elapsed("Sudoku Solver")()
+	defer elapsed()()
 
-	board := bi.convertCellBoard()
+	boardInit := bi.convertCellBoard()
 	fmt.Println("Board Inicial")
-	board.print(false)
-	bs := board.simpleSolve()
+	boardInit.print(true)
+	bs := boardInit.simpleSolve()
 	fmt.Println("\n\n ---------- Resultado final ----------")
 	bs.solve().print(false)
 
 }
 
-func elapsed(what string) func() {
+func elapsed() func() {
 	start := time.Now()
 	return func() {
-		fmt.Printf("%s took %v\n", what, time.Since(start))
+		fmt.Printf("Sudoku took %v\n", time.Since(start))
 	}
 }
 
 func (bi boardInt) convertCellBoard() board {
 	var b board
 	var cuad int
-	var s bool = false
+	var s bool
 
 	for c := 0; c <= 8; c++ {
 		for r := 0; r <= 8; r++ {
@@ -160,17 +159,17 @@ func (b board) print(pval bool) {
 	for c := 0; c <= 8; c++ {
 		for r := 0; r <= 8; r++ {
 			fmt.Print(b[c][r].value)
-			if pval == true {
+			if pval {
 				fmt.Print(b[c][r].pVal)
 				fmt.Print(b[c][r].solved)
 			}
 			fmt.Print("  ")
 			if r == 8 {
-				fmt.Println("\n")
+				fmt.Println(" ")
 			}
 		}
 	}
-	fmt.Println("------------------------------------------------ \n")
+	fmt.Println("------------------------------------------------")
 }
 
 func (b board) possibleValues() (board, int) {
@@ -182,9 +181,8 @@ func (b board) possibleValues() (board, int) {
 			mg := make(map[int]int)
 
 			//Si está resuelto se lo brinca (resuelto as in de entrada)
-			if b[c][r].solved == false {
-
-				//Revisa números existentes en columnas
+			if !b[c][r].solved {
+				//Revisa números existentes en columns
 				for i := 0; i < 9; i++ {
 					if b[c][i].value != 0 {
 						mr[b[c][i].value] = 1
@@ -238,7 +236,7 @@ func (b board) simpleSolve() board {
 	var b2 board
 	var i1 int
 
-	b2, i1 = b.possibleValues()
+	b2, _ = b.possibleValues()
 
 	for {
 		b2, i1 = b2.possibleValues()
@@ -250,21 +248,21 @@ func (b board) simpleSolve() board {
 	return b2
 }
 
-func (pb board) solve() (wb board) {
+func (b board) solve() (wb board) {
 	col := []board{}
-	col = append(col, pb)
+	col = append(col, b)
 	var b3 board
 	i := 0
 
 	for {
 		cx, rx := unsolved(col[i])
-		if cx ==-1 && rx==-1{
+		if cx == -1 && rx == -1 {
 			fmt.Println("Posible final")
 			col[i].print(false)
 			col[i].validate()
 			fmt.Println("Iteracion", i)
-			fmt.Println("Pasos encontrados",len(col))
-			wb=col[i]
+			fmt.Println("Pasos encontrados", len(col))
+			wb = col[i]
 			return wb
 		}
 
@@ -281,32 +279,30 @@ func (pb board) solve() (wb board) {
 	}
 }
 
-func (b board) validate() int {
-	var fs int
+func (b board) validate() {
+	fs := 0
 
 	for c := 0; c < 9; c++ {
 		sum := 0
-
 		for r := 0; r < 9; r++ {
 			sum += b[c][r].value
-			if b[c][r].solved == false {
-				fs++
+			if !b[c][r].solved {
+				fs = fs + 1
 			}
 		}
-		if sum!=45 {
+		if sum != 45 {
 			fmt.Println("\n \n Resultado o Sudoku inválido")
 			os.Exit(3)
 		}
 	}
-
-	return fs
+	//return fs
 }
 
 func unsolved(b board) (int, int) {
 
 	for c := 0; c < 9; c++ {
 		for r := 0; r < 9; r++ {
-			if b[c][r].solved == false {
+			if !b[c][r].solved {
 				return c, r
 			}
 		}

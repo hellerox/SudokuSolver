@@ -1,0 +1,31 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+bamboo
+
+/bin
+
+checkstyle-report.xml
+coverage.xml
+junit-report.xml
+profile.cov
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
+.glide/
+
+# Ignore vendor directory used by dep
+vendor/
+
+# Ignore local configuration used by developer
+config/
+
+# Ignore Goland files
+.idea/
