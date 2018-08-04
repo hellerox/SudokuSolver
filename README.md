@@ -1,6 +1,6 @@
 # Go Sudoku Solver
 [![Build Status](https://travis-ci.org/hellerox/SudokuSolver.svg?branch=master)](https://travis-ci.org/hellerox/SudokuSolver)
-
+[![Go Report Card](https://goreportcard.com/badge/github.com/hellerox/SudokuSolver)](https://goreportcard.com/report/github.com/hellerox/SudokuSolver)
 
 Sudoku solver, so far tested with some boards found online and it has solved all of them.
 
